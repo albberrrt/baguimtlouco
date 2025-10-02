@@ -1,58 +1,29 @@
+local lg = love.graphics
+local player = require("player")
+local camera = require("camera")
+
 function love.load()
-  width, height = 50, 50
-  x, y = love.graphics.getWidth() / 2 - width / 2, love.graphics.getHeight() / 2 - height / 2
-  love.graphics.setBackgroundColor(52 / 255, 76 / 255, 235 / 255)
-
-  velocity = 0
-  speed = 0
-  maxSpeed = 5
-
-  input_dir = 1 -- -1: left, 1: right
-  acceleration = 0.01
-  friction = 0.05
-end
-
-function getKeyDirection()
-  if love.keyboard.isDown("right") then
-    return 1
-  elseif love.keyboard.isDown("left") then
-    return -1
-  else
-    return 0
-  end
-end
-
-function accelerate(dir)
-  velocity = velocity + (acceleration * dir)
-
-  if speed > maxSpeed then
-    velocity = maxSpeed * input_dir
-  end
+  lg.setBackgroundColor(52 / 255, 76 / 255, 235 / 255)
+  lg.setFont(lg.newFont(12))
 end
 
 function love.update(dt)
-  speed = math.abs(velocity) -- 100 is the proportion factor
+  if dt > 0.033 then dt = 0.033 end
+  player:update(dt)
+  camera:update(player)
 
-  input_dir = getKeyDirection()
-  if input_dir ~= 0 then
-    accelerate(input_dir)
+  if love.keyboard.isDown("escape") then
+    love.event.quit()
   end
-  -- -- Deceleration
-  -- if not love.keyboard.isDown("right") and not love.keyboard.isDown("left") then
-  --   if math.abs(speed) > 0 then
-  --     speed = speed + (acceleration * -direction)
-  --   end
-  -- end
-
-  -- -- Clamp position and speed
-  -- if x <= 0 or x >= 750 then          -- 750 is 800 (window width) - 50 (rectangle width)
-  --   x = math.max(0, math.min(x, 750)) -- Clamp x between 0 and 750
-  -- end
 end
 
 function love.draw()
-  love.graphics.setColor(1, 1, 1)
-  love.graphics.rectangle("fill", x, y, width, height)
+  camera:draw()
 
-  love.graphics.print("Input direction: " .. input_dir .. " Speed: " .. speed, 10, 10)
+  player:draw()
+
+  camera:clear()
+
+  -- Debug
+  love.graphics.print("Input direction: " .. player.dir .. " Speed: " .. math.floor(math.abs(player.vel_x)), 10, 10)
 end
