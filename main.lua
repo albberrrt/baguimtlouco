@@ -20,6 +20,9 @@ end
 function love.draw()
   camera:draw()
 
+  love.graphics.setColor(1, 1, 1)
+  love.graphics.rectangle("fill", love.graphics.getWidth() / 2 - 50 / 2 + 250, player.y, 50, 50)
+
   player:draw()
 
   camera:clear()
